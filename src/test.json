@@ -1,0 +1,43 @@
+{"version" : "1.0.0" ,
+  "binaryURL" : "http://www.google.com" ,
+  "instructions" :[{ "type" : "status", "param" : "Please wait..." },
+    { "type"  : "condition",
+      "auto"  : true,
+      "param" : { "switchValue" : "_args.ordernum",
+      "branches"    : [ 
+        { "caseValue"    : { "value" : null },
+          "instructions" : [
+            { "type"      : "operatorInput",
+              "optional"  : false,
+              "namespace" : "opsInput",
+              "param"     : [{ "name" : "ordernum",
+                              "type" : "text" } ],
+              "auto"      : true } ] },
+        { "defaultCase"  : true,
+          "instructions" : [
+            { "type"     : "setVariable",
+              "optional" : false,
+              "param"    : {"variable" : "opsInput.ordernum",
+                            "value"    : "_args.ordernum" },
+              "auto"     : true } ]
+        } ] 
+      } 
+    },
+    { "type"      : "datasetCollector",
+      "namespace" : "orderdata",
+      "param"     : { "url"    : "_args.dataURL",
+                      "params" : { "qs" : { "id" : "opsInput.ordernum" } } },
+      "auto"      : true },
+    { "type"      : "script",
+      "comment"   :"Select the registered agent",
+      "param"     : "driver.manage().timeouts().pageLoadTimeout(600000); resolve();",
+      "auto"      :true },
+    { "type" : "status", "param" : "Please wait..." },
+    { "type"    : "script",
+      "comment" : "test for company type we are using",
+      "param"   : "_setDatasetValue('runtime.companyType', _resolveDatasetNamespace('orderdata.company_type').search('CORPORATION') != -1 ? 'CORP'  : _resolveDatasetNamespace('orderdata.company_type') ); resolve();",
+      "auto"    : true },
+      
+    { "type" : "status", "param" : "complete" }
+  ]
+}
